@@ -2,10 +2,10 @@ import { Link, useLocation } from "react-router-dom";
 
 export default function TopBar() {
   const { pathname } = useLocation();
+  const onLogin = pathname === "/login";
+  const onRegister = pathname === "/register";
 
-  const isActive = (path: string) => pathname === path;
-
-  const pillStyle = (active: boolean) => ({
+  const linkStyle = (active: boolean): React.CSSProperties => ({
     padding: "10px 14px",
     borderRadius: 12,
     border: active
@@ -15,9 +15,7 @@ export default function TopBar() {
     color: "#FFFFFF",
     textDecoration: "none",
     display: "flex",
-    alignItems: "center" as const,
-    gap: 8,
-    cursor: "pointer",
+    alignItems: "center",
   });
 
   return (
@@ -60,7 +58,7 @@ export default function TopBar() {
       </Link>
 
       <div style={{ display: "flex", gap: 10 }}>
-        <Link to="/login" style={pillStyle(isActive("/login"))}>
+        <Link to="/login" style={linkStyle(onLogin)}>
           تسجيل الدخول
         </Link>
 
@@ -76,7 +74,7 @@ export default function TopBar() {
             textDecoration: "none",
             display: "flex",
             alignItems: "center",
-            cursor: "pointer",
+            opacity: onRegister ? 0.85 : 1,
           }}
         >
           إنشاء حساب
