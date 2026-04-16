@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ../../
+      dockerfile: backend/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "4100:4100"
+    restart: unless-stopped

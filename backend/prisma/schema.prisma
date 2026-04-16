@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  MEMBER
+}
+
+enum KycStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum ListingStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  SOLD
+  ARCHIVED
+}
+
+enum RfqStatus {
+  OPEN
+  CLOSED
+  AWARDED
+}
+
+model User {
+  id           String      @id @default(cuid())
+  email        String      @unique
+  passwordHash String
+  role         UserRole    @default(MEMBER)
+  companyName  String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  kycProfile   KycProfile?
+  listings     Listing[]
+  rfqs         Rfq[]
+  rfqResponses RfqResponse[]
+}
+
+model KycProfile {
+  id           String    @id @default(cuid())
+  userId       String    @unique
+  legalName    String
+  nationalId   String
+  documentUrl  String
+  status       KycStatus @default(DRAFT)
+  reviewNotes  String?
+  reviewedById String?
+  reviewedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Listing {
+  id          String        @id @default(cuid())
+  ownerId     String
+  title       String
+  category    String
+  description String
+  price       Float
+  currency    String        @default("SAR")
+  status      ListingStatus @default(DRAFT)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+}
+
+model Rfq {
+  id           String        @id @default(cuid())
+  requesterId  String
+  title        String
+  requirements String
+  budget       Float
+  currency     String        @default("SAR")
+  status       RfqStatus     @default(OPEN)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  requester User          @relation(fields: [requesterId], references: [id], onDelete: Cascade)
+  responses RfqResponse[]
+}
+
+model RfqResponse {
+  id          String   @id @default(cuid())
+  rfqId       String
+  responderId String
+  message     String
+  offerPrice  Float
+  createdAt   DateTime @default(now())
+
+  rfq       Rfq  @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  responder User @relation(fields: [responderId], references: [id], onDelete: Cascade)
+
+  @@unique([rfqId, responderId])
+}
+
+model MetricDaily {
+  id              String   @id @default(cuid())
+  date            DateTime @unique
+  signups         Int      @default(0)
+  kycSubmitted    Int      @default(0)
+  listingsCreated Int      @default(0)
+  rfqCreated      Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  action    String
+  entity    String
+  entityId  String?
+  payload   String?
+  createdAt DateTime @default(now())
+}
