@@ -54,6 +54,7 @@ rfqRouter.post("/", requireAuth, async (req, res) => {
 });
 
 rfqRouter.post("/:id/respond", requireAuth, async (req, res) => {
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const parsed = responseSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({
@@ -63,7 +64,7 @@ rfqRouter.post("/:id/respond", requireAuth, async (req, res) => {
   }
   const body = parsed.data;
 
-  const rfq = await prisma.rfq.findUnique({ where: { id: req.params.id } });
+  const rfq = await prisma.rfq.findUnique({ where: { id } });
   if (!rfq) {
     return res.status(404).json({ message: "RFQ not found" });
   }

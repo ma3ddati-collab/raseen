@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { api, Listing } from "../lib/api";
-import { card, input, btnPrimary, btnGhost, COLORS } from "../styles/ui";
+import { api } from "../lib/api";
+import type { Listing } from "../lib/api";
+import { card, input, btnPrimary, COLORS } from "../styles/ui";
 
 export default function Listings() {
   const [listings, setListings] = useState<Listing[]>([]);

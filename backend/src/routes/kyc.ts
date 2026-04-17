@@ -64,8 +64,9 @@ kycRouter.get("/pending", requireAdmin, async (_req: Request, res: Response) => 
 
 // PATCH /kyc/:id/approve — shorthand approve (admin)
 kycRouter.patch("/:id/approve", requireAdmin, async (req: Request, res: Response) => {
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const profile = await prisma.kycProfile.update({
-    where: { id: req.params.id },
+    where: { id },
     data: {
       status: "APPROVED",
       reviewNotes: req.body.reviewNotes ?? "Approved",
@@ -86,6 +87,7 @@ kycRouter.patch("/:id/approve", requireAdmin, async (req: Request, res: Response
 });
 
 kycRouter.patch("/:id/review", requireAdmin, async (req: Request, res: Response) => {
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const parsed = reviewSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({
@@ -95,7 +97,7 @@ kycRouter.patch("/:id/review", requireAdmin, async (req: Request, res: Response)
   }
   const body = parsed.data;
   const profile = await prisma.kycProfile.update({
-    where: { id: req.params.id },
+    where: { id },
     data: {
       status: body.status,
       reviewNotes: body.reviewNotes,

@@ -30,7 +30,8 @@ listingsRouter.get("/", async (_req: Request, res: Response) => {
 });
 
 listingsRouter.get("/:id", async (req: Request, res: Response) => {
-  const item = await prisma.listing.findUnique({ where: { id: req.params.id } });
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const item = await prisma.listing.findUnique({ where: { id } });
   if (!item) {
     return res.status(404).json({ message: "Listing not found" });
   }
@@ -71,6 +72,7 @@ listingsRouter.post("/", requireAuth, async (req: Request, res: Response) => {
 });
 
 listingsRouter.patch("/:id/status", requireAuth, async (req: Request, res: Response) => {
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const parsed = updateStatusSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({
@@ -80,7 +82,7 @@ listingsRouter.patch("/:id/status", requireAuth, async (req: Request, res: Respo
   }
   const body = parsed.data;
 
-  const found = await prisma.listing.findUnique({ where: { id: req.params.id } });
+  const found = await prisma.listing.findUnique({ where: { id } });
   if (!found) {
     return res.status(404).json({ message: "Listing not found" });
   }
@@ -90,7 +92,7 @@ listingsRouter.patch("/:id/status", requireAuth, async (req: Request, res: Respo
   }
 
   const item = await prisma.listing.update({
-    where: { id: req.params.id },
+    where: { id },
     data: { status: body.status },
   });
 

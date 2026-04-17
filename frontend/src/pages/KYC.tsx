@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { api, KycProfile } from "../lib/api";
+import { api } from "../lib/api";
+import type { KycProfile } from "../lib/api";
 import { card, input, btnPrimary, COLORS } from "../styles/ui";
 
 const STATUS_LABEL: Record<string, string> = {

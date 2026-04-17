@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { api, Rfq } from "../lib/api";
+import { api } from "../lib/api";
+import type { Rfq } from "../lib/api";
 import { card, input, btnPrimary, COLORS } from "../styles/ui";
 import { useAuth } from "../context/AuthContext";
 
