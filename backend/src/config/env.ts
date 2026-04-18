@@ -10,6 +10,7 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(16),
   JWT_EXPIRES_IN: z.string().default("7d"),
   INVITE_CODES: z.string().default(""),
+  CORS_ORIGIN: z.string().default(""),
 });
 
 export const env = envSchema.parse(process.env);
