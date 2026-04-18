@@ -11,6 +11,6 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["src", "prisma/seed.ts"],
+  "include": ["src"],
   "exclude": ["dist", "node_modules"]
 }
