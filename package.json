@@ -9,7 +9,7 @@
   "scripts": {
     "dev:frontend": "npm --workspace frontend run dev",
     "dev:backend": "npm --workspace backend run dev",
-    "build:frontend": "npm --workspace frontend run build",
+    "build:frontend": "npm install && npm run build --workspace=raseen-frontend",
     "build:backend": "npm --workspace backend run build",
     "build": "npm run build:frontend && npm run build:backend",
     "lint": "npm --workspace frontend run lint && npm --workspace backend run lint",
