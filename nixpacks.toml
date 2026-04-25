@@ -2,4 +2,4 @@
 cmds = ["npm ci"]
 
 [phases.build]
-cmds = ["cd backend && npx prisma generate && npm run build"]
+cmds = ["npm run build --workspace=raseen-frontend"]
