@@ -11,13 +11,41 @@ function authHeaders(): HeadersInit {
   };
 }
 
+async function parseResponseBody(res: Response): Promise<unknown> {
+  const text = await res.text();
+  if (!text) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(text) as unknown;
+  } catch {
+    return text;
+  }
+}
+
+function getErrorMessage(data: unknown, res: Response): string {
+  if (data && typeof data === "object" && "message" in data) {
+    const message = (data as { message?: unknown }).message;
+    if (typeof message === "string" && message.trim()) {
+      return message;
+    }
+  }
+
+  if (typeof data === "string" && data.trim()) {
+    return data;
+  }
+
+  return `Request failed with status ${res.status}`;
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     headers: { "Content-Type": "application/json", ...init?.headers },
     ...init,
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message ?? res.statusText);
+  const data = await parseResponseBody(res);
+  if (!res.ok) throw new Error(getErrorMessage(data, res));
   return data as T;
 }
 
@@ -26,8 +54,8 @@ async function authRequest<T>(path: string, init?: RequestInit): Promise<T> {
     headers: { ...authHeaders(), ...init?.headers },
     ...init,
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message ?? res.statusText);
+  const data = await parseResponseBody(res);
+  if (!res.ok) throw new Error(getErrorMessage(data, res));
   return data as T;
 }
 
