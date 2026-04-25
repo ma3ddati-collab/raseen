@@ -30,7 +30,8 @@ authRouter.post("/register", async (req, res) => {
   const body = parsed.data;
 
   const allowed = env.INVITE_CODES.split(",").map(c => c.trim()).filter(Boolean);
-  if (allowed.length === 0 || !body.inviteCode || !allowed.includes(body.inviteCode)) {
+  // Only enforce invite codes if they are configured
+  if (allowed.length > 0 && (!body.inviteCode || !allowed.includes(body.inviteCode))) {
     return res.status(403).json({ message: "Invite only" });
   }
 
