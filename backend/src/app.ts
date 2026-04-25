@@ -19,6 +19,9 @@ const allowedOrigins = env.CORS_ORIGIN.split(",")
   .filter(Boolean);
 const allowedOriginSet = new Set(allowedOrigins);
 
+// Allow any *.vercel.app subdomain that starts with "raseen" to cover preview deployments
+const VERCEL_PATTERN = /^https:\/\/raseen[a-zA-Z0-9-]*\.vercel\.app$/;
+
 app.use(helmet());
 app.use(
   cors({
@@ -27,7 +30,7 @@ app.use(
         return callback(null, true);
       }
 
-      if (allowedOriginSet.has(origin)) {
+      if (allowedOriginSet.has(origin) || VERCEL_PATTERN.test(origin)) {
         return callback(null, true);
       }
 
