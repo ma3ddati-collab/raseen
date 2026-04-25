@@ -60,10 +60,9 @@ export default function Register() {
           />
           <input
             style={{ ...input, letterSpacing: 2 }}
-            placeholder="كود الدعوة (Invite Code)"
+            placeholder="كود الدعوة (Invite Code) - اختياري"
             value={inviteCode}
             onChange={e => setInviteCode(e.target.value.trim())}
-            required
           />
           {err && <p style={{ color: "#FF6B6B", margin: 0, fontSize: 14 }}>{err}</p>}
           <button style={{ ...btnPrimary, width: "100%", opacity: loading ? 0.7 : 1 }} disabled={loading}>
