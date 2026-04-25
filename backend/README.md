@@ -61,4 +61,4 @@ Enterprise-ready backend bootstrap for Raseen using:
    - backend health remained `200` after failed validations
    - beta E2E flow passed (`13/13`)
    - metrics snapshot script completed successfully
-- Beta path remains unchanged and focused on: invite-only registration, admin KYC review/approval, onboarding flow.
+- Beta path remains focused on: open registration, admin KYC review/approval, onboarding flow.

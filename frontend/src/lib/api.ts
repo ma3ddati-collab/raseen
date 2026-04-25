@@ -39,7 +39,7 @@ export interface AuthPayload {
 
 export const api = {
   auth: {
-    register: (body: { email: string; password: string; companyName: string; inviteCode: string }) =>
+    register: (body: { email: string; password: string; companyName: string }) =>
       request<AuthPayload>("/auth/register", { method: "POST", body: JSON.stringify(body) }),
     login: (body: { email: string; password: string }) =>
       request<AuthPayload>("/auth/login", { method: "POST", body: JSON.stringify(body) }),

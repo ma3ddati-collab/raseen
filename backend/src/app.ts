@@ -10,17 +10,34 @@ import { listingsRouter } from "./routes/listings.js";
 import { metricsRouter } from "./routes/metrics.js";
 import { rfqRouter } from "./routes/rfq.js";
 import { errorHandler, notFound } from "./middleware/error.js";
+import { rfqRateLimit } from "./middleware/rateLimit.js";
 
 export const app = express();
 
 const allowedOrigins = env.CORS_ORIGIN.split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
+const allowedOriginSet = new Set(allowedOrigins);
 
 app.use(helmet());
 app.use(
   cors({
-    origin: allowedOrigins.length > 0 ? allowedOrigins : true,
+    origin: (origin, callback) => {
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOriginSet.has(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(
+        Object.assign(new Error("CORS origin is not allowed"), {
+          status: 403,
+          code: "CORS_ORIGIN_DENIED",
+        })
+      );
+    },
   })
 );
 app.use(express.json({ limit: "1mb" }));
@@ -34,7 +51,7 @@ app.use("/health", healthRouter);
 app.use("/auth", authRouter);
 app.use("/kyc", kycRouter);
 app.use("/listings", listingsRouter);
-app.use("/rfq", rfqRouter);
+app.use("/rfq", rfqRateLimit, rfqRouter);
 app.use("/metrics", metricsRouter);
 
 app.use(notFound);

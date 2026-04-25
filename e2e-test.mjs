@@ -4,7 +4,6 @@
  */
 
 const BASE = "http://127.0.0.1:4000";
-const INVITE = process.env.INVITE_CODE ?? "ABC123";
 const EMAIL_A = `e2e_a_${Date.now()}@test.com`;
 const EMAIL_B = `e2e_b_${Date.now()}@test.com`;
 const PASS = "E2ePass99";
@@ -51,49 +50,25 @@ try {
   }
 }
 
-// ── 1. Invite wrong → 403 ─────────────────────────────────────────────────────
-try {
-  await req("/auth/register", {
-    method: "POST",
-    body: JSON.stringify({ email: EMAIL_A, password: PASS, companyName: "Test Co", inviteCode: "WRONG" }),
-  });
-  fail("Invite wrong → 403", "expected 403 but got 2xx");
-} catch (e) {
-  if (e.message.includes("403")) pass("Invite wrong → 403 (rejected correctly)");
-  else fail("Invite wrong → 403", e.message);
-}
-
-// ── 2. No invite → 403 ───────────────────────────────────────────────────────
-try {
-  await req("/auth/register", {
-    method: "POST",
-    body: JSON.stringify({ email: EMAIL_A, password: PASS, companyName: "Test Co" }),
-  });
-  fail("No invite → 403", "expected 403 but got 2xx");
-} catch (e) {
-  if (e.message.includes("403")) pass("No invite → 403 (rejected correctly)");
-  else fail("No invite → 403", e.message);
-}
-
-// ── 3. Correct invite → Register success ─────────────────────────────────────
+// ── 1. No invite → Register success ──────────────────────────────────────────
 try {
   const data = await req("/auth/register", {
     method: "POST",
-    body: JSON.stringify({ email: EMAIL_A, password: PASS, companyName: "Alpha Co", inviteCode: INVITE }),
+    body: JSON.stringify({ email: EMAIL_A, password: PASS, companyName: "Alpha Co" }),
   });
   if (!data.token) throw new Error("no token");
   tokenA = data.token;
-  pass(`Correct invite (${INVITE}) → Register success`);
-} catch (e) { fail("Correct invite → Register success", e.message); process.exit(1); }
+  pass("No invite → Register success");
+} catch (e) { fail("No invite → Register success", e.message); process.exit(1); }
 
-// ── 4. Login ──────────────────────────────────────────────────────────────────
+// ── 2. Login ──────────────────────────────────────────────────────────────────
 try {
   const data = await req("/auth/login", { method: "POST", body: JSON.stringify({ email: EMAIL_A, password: PASS }) });
   tokenA = data.token;
   pass("Login");
 } catch (e) { fail("Login", e.message); }
 
-// ── 5. KYC Submit ─────────────────────────────────────────────────────────────
+// ── 3. KYC Submit ─────────────────────────────────────────────────────────────
 let kycId = "";
 try {
   const data = await req("/kyc/submit", {
@@ -105,14 +80,14 @@ try {
   pass("KYC Submit");
 } catch (e) { fail("KYC Submit", e.message); }
 
-// ── 6. Admin login ────────────────────────────────────────────────────────────
+// ── 4. Admin login ────────────────────────────────────────────────────────────
 try {
   const data = await req("/auth/login", { method: "POST", body: JSON.stringify({ email: ADMIN_EMAIL, password: ADMIN_PASS }) });
   tokenAdmin = data.token;
   pass("Admin Login");
 } catch (e) { fail("Admin Login", e.message); process.exit(1); }
 
-// ── 7. GET /kyc/pending — admin sees submitted KYC ───────────────────────────
+// ── 5. GET /kyc/pending — admin sees submitted KYC ───────────────────────────
 try {
   const data = await req("/kyc/pending", {}, tokenAdmin);
   if (!Array.isArray(data)) throw new Error("not an array");
@@ -121,7 +96,7 @@ try {
   pass("GET /kyc/pending (admin sees submitted KYC)");
 } catch (e) { fail("GET /kyc/pending", e.message); }
 
-// ── 8. PATCH /kyc/:id/approve ────────────────────────────────────────────────
+// ── 6. PATCH /kyc/:id/approve ────────────────────────────────────────────────
 try {
   const data = await req(`/kyc/${kycId}/approve`, {
     method: "PATCH",
@@ -131,14 +106,14 @@ try {
   pass("PATCH /kyc/:id/approve");
 } catch (e) { fail("PATCH /kyc/:id/approve", e.message); }
 
-// ── 9. /kyc/me reflects APPROVED ─────────────────────────────────────────────
+// ── 7. /kyc/me reflects APPROVED ─────────────────────────────────────────────
 try {
   const data = await req("/kyc/me", {}, tokenA);
   if (data.status !== "APPROVED") throw new Error(`status=${data.status}`);
   pass("KYC /me → APPROVED");
 } catch (e) { fail("KYC /me → APPROVED", e.message); }
 
-// ── 10. Listing + RFQ ─────────────────────────────────────────────────────────
+// ── 8. Listing + RFQ ─────────────────────────────────────────────────────────
 try {
   const l = await req("/listings", {
     method: "POST",
@@ -157,7 +132,7 @@ try {
   pass("RFQ Create");
 } catch (e) { fail("RFQ Create", e.message); }
 
-// ── 11. Logout — invalid token rejected ──────────────────────────────────────
+// ── 9. Logout — invalid token rejected ──────────────────────────────────────
 try {
   await req("/kyc/me", {}, "badtoken");
   fail("Logout (bad token rejected)", "expected 401");

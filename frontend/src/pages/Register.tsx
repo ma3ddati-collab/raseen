@@ -10,7 +10,6 @@ export default function Register() {
   const [companyName, setCompanyName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [inviteCode, setInviteCode] = useState("");
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -19,7 +18,7 @@ export default function Register() {
     setErr("");
     setLoading(true);
     try {
-      const payload = await api.auth.register({ email, password, companyName, inviteCode });
+      const payload = await api.auth.register({ email, password, companyName });
       login(payload);
       nav("/dashboard");
     } catch (e: any) {
@@ -56,13 +55,6 @@ export default function Register() {
             value={password}
             onChange={e => setPassword(e.target.value)}
             minLength={8}
-            required
-          />
-          <input
-            style={{ ...input, letterSpacing: 2 }}
-            placeholder="كود الدعوة (Invite Code)"
-            value={inviteCode}
-            onChange={e => setInviteCode(e.target.value.trim())}
             required
           />
           {err && <p style={{ color: "#FF6B6B", margin: 0, fontSize: 14 }}>{err}</p>}
