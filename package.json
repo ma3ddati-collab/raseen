@@ -6,6 +6,9 @@
     "frontend",
     "backend"
   ],
+  "dependencies": {
+    "serve": "^14.2.0"
+  },
   "scripts": {
     "dev:frontend": "npm --workspace frontend run dev",
     "dev:backend": "npm --workspace backend run dev",
