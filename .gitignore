@@ -12,10 +12,10 @@ dist
 dist-ssr
 *.local
 *.db
-backend/.env
-backend/prisma/*.db
-frontend/dist
-backend/dist
+.env
+.env.*
+coverage
+.prisma
 
 # Editor directories and files
 .vscode/*
